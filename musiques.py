@@ -2,7 +2,13 @@ from pytube import YouTube
 from pytube import Playlist
 import re
 
-#fonction permettant d'afficher le pourcentage
+
+# Avant de lancé le programme pour la 1ere fois il faut :
+# - vérifier que vous ayez la librairie python
+# - vérifier que vous ayez la librairie pytube
+# - si vous téléchargez une playlist vérifiez qu'elle soit publique
+
+# fonction permettant d'afficher le pourcentage
 def on_download_progress(stream, chunk, bytes_remaining):
     bytes_downloading = stream.filesize - bytes_remaining
     percent = bytes_downloading * 100 / stream.filesize
@@ -40,19 +46,21 @@ def voirModeleDl():
     for stream in yt.streams.fmt_streams:
         print(" ", stream)
 
-# programme qui demande directement à l'utilisateur le lien de dl
-print("Collez le lien de votre playlist, de votre vidéo ou de votre musique")
-url = input()
-x = re.search(".*playlist.*", url)
 
-if x:
-    print("Vous avez mis le lien d'une playlist\ntaper 1 format audio, taper 2 format video")
-    p = Playlist(url)
-    reponse = int(input())
-    dlPlaylistMusic() if reponse == 1 else dlPlaylistVideo()
-else:
-    print("Vous avez mis le lien d'une video\ntaper 1 format audio, taper 2 format video")
-    yt = YouTube(url)
-    yt.register_on_progress_callback(on_download_progress)
-    reponse = int(input())
-    dlOneMusic() if reponse == 1 else dlOneVideo()
+if __name__ == '__main__':
+    # programme qui demande directement à l'utilisateur le lien de dl
+    print("Collez le lien de votre playlist, de votre vidéo ou de votre musique")
+    url = input()
+    x = re.search(".*playlist.*", url)
+
+    if x:
+        print("Vous avez mis le lien d'une playlist\ntaper 1 format audio, taper 2 format video")
+        p = Playlist(url)
+        reponse = int(input())
+        dlPlaylistMusic() if reponse == 1 else dlPlaylistVideo()
+    else:
+        print("Vous avez mis le lien d'une video\ntaper 1 format audio, taper 2 format video")
+        yt = YouTube(url)
+        yt.register_on_progress_callback(on_download_progress)
+        reponse = int(input())
+        dlOneMusic() if reponse == 1 else dlOneVideo()
