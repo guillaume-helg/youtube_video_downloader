@@ -1,66 +1,72 @@
 from pytube import YouTube
 from pytube import Playlist
 import re
+import os
 
 
-# Avant de lancé le programme pour la 1ere fois il faut :
-# - vérifier que vous ayez la librairie python
-# - vérifier que vous ayez la librairie pytube
-# - si vous téléchargez une playlist vérifiez qu'elle soit publique
+# Before run the code for the first time :
+# - check if you have python librairy
+# - check if you have pytube librairy
+# - check if your playlist is public
 
-# fonction permettant d'afficher le pourcentage
-def on_download_progress(stream, chunk, bytes_remaining):
-    bytes_downloading = stream.filesize - bytes_remaining
-    percent = bytes_downloading * 100 / stream.filesize
-    print(f"progression du téléchargement {int(percent)}%")
 
-# fonction pour telecharger une playlist au format musique
-def dlPlaylistMusic():
-    for video in p.videos:
-        print("telechargement de : ", video.title)
-        video.streams.get_by_itag(140).download()
+# Allow to download playlist of music
+def download_playlist_music(playlist):
+    for video in playlist.videos:
+        if not check_file_exists(playlist.title, video.title):
+            print("Downloading : ", video.title)
+            video.streams.get_by_itag(140).download(f"./DL_{playlist.title}")
     
-# fonction pour telecharger une musique
-def dlOneMusic():
-    print("telechargement musical de ", yt.title)
-    stream = yt.streams.get_by_itag(140)
-    stream.download()
-    print("fini")
 
-# fonction pour telecharger une playlist au format video
-def dlPlaylistVideo():
-    for video in p.videos:
-        print("telechargement de : ", video.title)
-        video.streams.get_by_itag(22).download()
+# Allow to download music
+def download_music(video):
+    print("Downloading : ", video.title)
+    stream = video.streams.get_by_itag(140)
+    stream.download("./DL_music/")
 
-# fonction pour telecharger une video
-def dlOneVideo():
-    print("telechargement de la video ", yt.title)
-    stream = yt.streams.get_by_itag(22)
-    stream.download()
-    print("fini")
 
-# fonction pour voir tout les modeles de telechargement
-def voirModeleDl():
-    yt = YouTube(url)
-    for stream in yt.streams.fmt_streams:
+# Allow to download playlist of video
+def download_playlist_video(playlist):
+    for video in playlist.videos:
+        if not check_file_exists(playlist.title, video.title):
+            print("Downloading : ", video.title)
+            video.streams.get_by_itag(22).download(f"./DL_{playlist.title}")
+
+
+# Allow to download video
+def download_video(video):
+    print("Downloading : ", video.title)
+    stream = video.streams.get_by_itag(22)
+    stream.download("./DL_video/")
+
+
+# Allow to see each download mode enable
+def display_all_download_mode(url):
+    ytb_object = YouTube(url)
+    for stream in ytb_object.streams.fmt_streams:
         print(" ", stream)
 
 
+def check_file_exists(folder, file):
+    file_path = os.path.join(folder, file)
+    if os.path.exists(file_path):
+        print(f"Le fichier '{file}' existe dans le dossier '{folder}'.")
+    else:
+        print(f"Le fichier '{file}' n'existe pas dans le dossier '{folder}'.")
+
+
 if __name__ == '__main__':
-    # programme qui demande directement à l'utilisateur le lien de dl
-    print("Collez le lien de votre playlist, de votre vidéo ou de votre musique")
+    print("Paste your link (video, music, playlist) : ")
     url = input()
+
+    # true if this is a playlist, false if this is not
     x = re.search(".*playlist.*", url)
 
     if x:
-        print("Vous avez mis le lien d'une playlist\ntaper 1 format audio, taper 2 format video")
-        p = Playlist(url)
+        print("(Playlist) Choose your format : \n1 - audio\n2 - video")
         reponse = int(input())
-        dlPlaylistMusic() if reponse == 1 else dlPlaylistVideo()
+        download_playlist_music(Playlist(url)) if reponse == 1 else download_playlist_video(Playlist(url))
     else:
-        print("Vous avez mis le lien d'une video\ntaper 1 format audio, taper 2 format video")
-        yt = YouTube(url)
-        yt.register_on_progress_callback(on_download_progress)
+        print("(Video) Choose your format : \n1 - audio\n2 - video")
         reponse = int(input())
-        dlOneMusic() if reponse == 1 else dlOneVideo()
+        download_music(YouTube(url)) if reponse == 1 else download_video(YouTube(url))
