@@ -1,59 +1,72 @@
 from pytube import YouTube
 from pytube import Playlist
 import re
+import os
 
 
-# Avant de lancé le programme pour la 1ere fois il faut :
-# - vérifier que vous ayez la librairie python
-# - vérifier que vous ayez la librairie pytube
-# - si vous téléchargez une playlist, vérifiez qu'elle soit publique
+# Before run the code for the first time :
+# - check if you have python librairy
+# - check if you have pytube librairy
+# - check if your playlist is public
 
 
-# fonction pour telecharger une playlist au format musique
+# Allow to download playlist of music
 def download_playlist_music(playlist):
     for video in playlist.videos:
-        print("Downloading : ", video.title)
-        video.streams.get_by_itag(140).download()
+        if not check_file_exists(playlist.title, video.title):
+            print("Downloading : ", video.title)
+            video.streams.get_by_itag(140).download(f"./DL_{playlist.title}")
     
 
-# fonction pour telecharger une musique
+# Allow to download music
 def download_music(video):
     print("Downloading : ", video.title)
     stream = video.streams.get_by_itag(140)
-    stream.download()
+    stream.download("./DL_music/")
 
 
-# fonction pour telecharger une playlist au format video
+# Allow to download playlist of video
 def download_playlist_video(playlist):
     for video in playlist.videos:
-        print("Downloading : ", video.title)
-        video.streams.get_by_itag(22).download()
+        if not check_file_exists(playlist.title, video.title):
+            print("Downloading : ", video.title)
+            video.streams.get_by_itag(22).download(f"./DL_{playlist.title}")
 
 
-# fonction pour telecharger une video
+# Allow to download video
 def download_video(video):
-    print("telechargement de la video ", video.title)
+    print("Downloading : ", video.title)
     stream = video.streams.get_by_itag(22)
-    stream.download()
+    stream.download("./DL_video/")
 
 
-# fonction pour voir tout les modeles de telechargement
-def display_all_download_mode():
+# Allow to see each download mode enable
+def display_all_download_mode(url):
     ytb_object = YouTube(url)
     for stream in ytb_object.streams.fmt_streams:
         print(" ", stream)
 
 
+def check_file_exists(folder, file):
+    file_path = os.path.join(folder, file)
+    if os.path.exists(file_path):
+        print(f"Le fichier '{file}' existe dans le dossier '{folder}'.")
+    else:
+        print(f"Le fichier '{file}' n'existe pas dans le dossier '{folder}'.")
+
+
 if __name__ == '__main__':
-    print("Collez le lien de votre playlist, de votre vidéo ou de votre musique")
+    print("Paste your link (video, music, playlist) : ")
     url = input()
+
+    # true if this is a playlist, false if this is not
     x = re.search(".*playlist.*", url)
 
     if x:
-        print("Vous avez mis le lien d'une playlist\ntaper 1 format audio, taper 2 format video")
+        print("(Playlist) Choose your format : \n1 - audio\n2 - video")
         reponse = int(input())
         download_playlist_music(Playlist(url)) if reponse == 1 else download_playlist_video(Playlist(url))
     else:
-        print("Vous avez mis le lien d'une video\ntaper 1 format audio, taper 2 format video")
+        print("(Video) Choose your format : \n1 - audio\n2 - video")
         reponse = int(input())
         download_music(YouTube(url)) if reponse == 1 else download_video(YouTube(url))
