@@ -13,7 +13,7 @@ import os
 # Allow to download playlist of music
 def download_playlist_music(playlist):
     for video in playlist.videos:
-        if not check_file_exists(playlist.title, video.title):
+        if not check_file_exists(f"DL_{playlist.title}", f"{video.title}.mp4"):
             print("Downloading : ", video.title)
             video.streams.get_by_itag(140).download(f"./DL_{playlist.title}")
     
@@ -50,9 +50,9 @@ def display_all_download_mode(url):
 def check_file_exists(folder, file):
     file_path = os.path.join(folder, file)
     if os.path.exists(file_path):
-        print(f"Le fichier '{file}' existe dans le dossier '{folder}'.")
+        return True
     else:
-        print(f"Le fichier '{file}' n'existe pas dans le dossier '{folder}'.")
+        return False
 
 
 if __name__ == '__main__':
