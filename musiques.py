@@ -5,8 +5,8 @@ import os
 
 
 # Before run the code for the first time :
-# - check if you have python librairy
-# - check if you have pytube librairy
+# - check if you have python library
+# - check if you have pytube library
 # - check if your playlist is public
 
 
