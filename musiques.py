@@ -9,6 +9,9 @@ import os
 # - check if you have pytube library
 # - check if your playlist is public
 
+def convert_from_spotify():
+    pass
+
 
 # Allow to download playlist of music
 def download_playlist_music(playlist):
