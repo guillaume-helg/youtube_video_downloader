@@ -44,3 +44,5 @@ music/
 video/
 
 output/DL_*/
+
+.env

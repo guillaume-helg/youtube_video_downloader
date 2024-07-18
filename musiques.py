@@ -1,16 +1,68 @@
 from pytube import YouTube
 from pytube import Playlist
+
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+
 import re
 import os
+import sys
+from googleapiclient.discovery import build
+from dotenv import load_dotenv
+
+load_dotenv()
+
+client_id = os.getenv('SPOTIFY_CLIENT_ID')
+client_secret = os.getenv('SPOTIFY_CLIENT_SECRET')
+youtube_api_key = os.getenv('YOUTUBE_API_KEY')
 
 
-# Before run the code for the first time :
-# - check if you have python library
-# - check if you have pytube library
-# - check if your playlist is public
+sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id, client_secret))
+youtube = build('youtube', 'v3', developerKey=youtube_api_key)
 
-def convert_from_spotify():
-    pass
+def get_playlist_tracks(playlist_link):
+    print('hey')
+    # Extraire l'ID de la playlist à partir du lien
+    playlist_id = playlist_link.split('/')[-1].split('?')[0]
+
+    results = sp.playlist_tracks(playlist_id)
+    print(playlist_id)
+
+    tracks = results['items']
+
+    track_info_list = []
+
+    while results['next']:
+        results = sp.next(results)
+        tracks.extend(results['items'])
+
+    for idx, item in enumerate(tracks):
+        track = item['track']
+        track_name = track['name']
+        artist_name = track['artists'][0]['name']
+        track_info_list.append(f"{track_name} - {artist_name}")
+
+    return track_info_list
+
+
+def search_youtube(track_name, artist_name):
+    query = f"{track_name} {artist_name}"
+    request = youtube.search().list(
+        q=query,
+        part='snippet',
+        maxResults=1
+    )
+    response = request.execute()
+    video_id = response['items'][0]['id']['videoId']
+    video_url = f"https://www.youtube.com/watch?v={video_id}"
+    return video_url
+
+def save_to_file(track_info_list, filename='tracks.txt'):
+    with open(filename, 'w', encoding='utf-8') as f:
+        for track in track_info_list:
+            track_name, artist_name = track.split('-')
+            youtube_url = search_youtube(track_name, artist_name)
+            f.write(f"{track_name} - {artist_name} - {youtube_url}\n")
 
 
 # Allow to download playlist of music
@@ -59,6 +111,10 @@ def check_file_exists(folder, file):
 
 
 if __name__ == '__main__':
+    track = get_playlist_tracks("https://open.spotify.com/playlist/37i9dQZF1E36aSV6tJQQTm?si=2454b8591ba946c1")
+    print(track)
+    save_to_file(track, "aaa.txt")
+
     print("Paste your link (video, music, playlist) : ")
     url = input()
 
