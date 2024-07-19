@@ -38,7 +38,7 @@ build/
 ### Mac OS ###
 .DS_Store
 
-### Fichier contenant les musiques ###
+### Folder containing the musics ###
 DL_*/
 music/
 video/
