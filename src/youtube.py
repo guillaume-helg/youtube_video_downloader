@@ -2,12 +2,11 @@ from googleapiclient.discovery import build
 
 class YoutubeApi:
     def __init__(self, youtube_api_key):
-        youtube = build('youtube', 'v3', developerKey=youtube_api_key)
-        pass
+        self.ytb = build('youtube', 'v3', developerKey=youtube_api_key)
     
-    def search_youtube(track_name, artist_name):
+    def search_youtube(self, track_name, artist_name):
         query = f"{track_name} {artist_name}"
-        request = youtube.search().list(
+        request = self.ytb.search().list(
             q=query,
             part='snippet',
             maxResults=1

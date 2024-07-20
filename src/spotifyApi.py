@@ -3,20 +3,19 @@ from spotipy.oauth2 import SpotifyClientCredentials
 
 class SpotifyApi:
     def __init__(self, client_id, client_secret):
-        sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id, client_secret))
-        pass
+        self.sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id, client_secret))
 
-    def get_playlist_tracks(playlist_link):
+    def get_playlist_tracks(self, playlist_link):
         playlist_id = playlist_link.split('/')[-1].split('?')[0]
 
-        results = sp.playlist_tracks(playlist_id)
+        results = self.sp.playlist_tracks(playlist_id)
 
         tracks = results['items']
 
         track_info_list = []
 
         while results['next']:
-            results = sp.next(results)
+            results = self.sp.next(results)
             tracks.extend(results['items'])
 
         for idx, item in enumerate(tracks):
