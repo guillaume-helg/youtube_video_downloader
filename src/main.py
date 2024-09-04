@@ -7,7 +7,6 @@ from pytube import Playlist, YouTube
 from pytubeApi import PytubeApi
 from spotifyApi import SpotifyApi
 from youtube import YoutubeApi
-import utils
 
 load_dotenv()
 
@@ -27,12 +26,10 @@ def main():
     ytb = YoutubeApi(youtube_api_key)
     ptb = PytubeApi()
 
-
     def download_from_youtube():
         print("Paste your link (video, music, playlist) : ")
         url = input()
 
-        # true if this is a playlist, false if this is not
         x = re.search(".*playlist.*", url)
 
         if x:
@@ -48,8 +45,9 @@ def main():
         print("Paste your link (spotify playlist) : ")
         url = input()
 
-        track = stf.get_playlist_tracks("https://open.spotify.com/playlist/37i9dQZF1E36aSV6tJQQTm?si=2454b8591ba946c1")
-        utils.save_to_file(track, ytb, "aaa.txt")
+        tracks = stf.get_playlist_tracks(url)
+
+        ptb.download_spotify_tracks(tracks, ytb)
 
 
     def see_my_history():
@@ -73,7 +71,6 @@ def main():
             actions[choice]()
         else:
             print("Invalid choice ! Try again !")
-
 
 
 if __name__ == "__main__":

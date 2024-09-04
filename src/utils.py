@@ -1,6 +1,4 @@
 import os
-import re
-import sys
 
 def check_file_exists(folder, file):
     file_path = os.path.join(folder, file)
@@ -8,6 +6,7 @@ def check_file_exists(folder, file):
         return True
     else:
         return False
+
 
 def save_to_file(track_info_list, ytb, filename='tracks.txt'):
     with open(filename, 'w', encoding='utf-8') as f:
