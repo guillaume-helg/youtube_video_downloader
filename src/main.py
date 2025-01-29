@@ -2,11 +2,9 @@ import os
 from dotenv import load_dotenv
 import re
 
-from pytube import Playlist, YouTube
+from pytubefix import Playlist, YouTube
 
 from pytubeApi import PytubeApi
-from spotifyApi import SpotifyApi
-from youtube import YoutubeApi
 
 load_dotenv()
 
@@ -18,12 +16,8 @@ def print_menu():
     print("6. Exit")
 
 def main():
-    client_id = os.getenv('SPOTIFY_CLIENT_ID')
-    client_secret = os.getenv('SPOTIFY_CLIENT_SECRET')
-    youtube_api_key = os.getenv('YOUTUBE_API_KEY')
 
-    stf = SpotifyApi(client_id, client_secret)
-    ytb = YoutubeApi(youtube_api_key)
+
     ptb = PytubeApi()
 
     def download_from_youtube():
@@ -39,15 +33,15 @@ def main():
         else:
             print("(Video) Choose your format : \n1 - audio\n2 - video")
             reponse = int(input())
-            ptb.download_music(YouTube(url)) if reponse == 1 else ptb.download_video(YouTube(url))
+            ptb.download_music(YouTube(url)) if reponse == 1 else ptb.download_video(YouTube(url), use_oauth=True, allow_oauth_cache=True, use_po_token=True)
 
-    def download_from_spotify():
-        print("Paste your link (spotify playlist) : ")
-        url = input()
-
-        tracks = stf.get_playlist_tracks(url)
-
-        ptb.download_spotify_tracks(tracks, ytb)
+    # def download_from_spotify():
+    #     print("Paste your link (spotify playlist) : ")
+    #     url = input()
+    #
+    #     tracks = stf.get_playlist_tracks(url)
+    #
+    #     ptb.download_spotify_tracks(tracks, ytb)
 
 
     def see_my_history():
@@ -56,7 +50,7 @@ def main():
 
     actions = {
         '1': download_from_youtube,
-        '2': download_from_spotify,
+        #'2': download_from_spotify,
         '3': see_my_history,
     }
 

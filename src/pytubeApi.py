@@ -1,23 +1,40 @@
-from pytube import YouTube, Playlist
+from pytubefix import YouTube, Playlist
 import utils
+from pytubefix.exceptions import PytubeFixError
+
+import ssl
+from pytubefix import YouTube, request, extract
+import pytubefix, re
+
 
 class PytubeApi:
     def __init__(self):
         pass
     
+    def download_playlist_music(self, playlist_url):
+        try:
+            playlist = Playlist(playlist_url)
+            for video in playlist.videos:
+                try:
+                    # Vérifiez si le fichier existe déjà
+                    if not utils.check_file_exists(f"DL_{playlist.title}", f"{video.title}.mp4"):
+                        print("Downloading : ", video.title)
 
-    # Allow to download playlist of music
-    def download_playlist_music(self, playlist):
-        for video in playlist.videos:
-            if not utils.check_file_exists(f"DL_{playlist.title}", f"{video.title}.mp4"):
-                print("Downloading : ", video.title)
-                video.streams.get_by_itag(140).download(f"./DL_{playlist.title}")
-        
+                        # Essayez d'obtenir le flux audio avec itag 140
+                        stream = video.streams.get_by_itag(140)
+                        if stream is not None:
+                            stream.download(f"./DL_{playlist.title}")
+                        else:
+                            print(f"Aucun flux audio 140 disponible pour la vidéo {video.title}")
+                except PytubeError as e:
+                    print(f"Erreur lors du téléchargement de la vidéo {video.title} : {e}")
+        except Exception as e:
+            print(f"Erreur lors de la récupération de la playlist : {e}")
     
 
     # Allow to download music
     def download_music(self, video):
-        print("Downloading : ", video.title)
+        #print("Downloading : ", video.title)
         stream = video.streams.get_by_itag(140)
         stream.download("./DL_music/")
     
