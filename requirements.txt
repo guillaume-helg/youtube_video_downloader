@@ -1,3 +1,5 @@
-pytubefix
+yt-dlp==2025.2.19
 python-dotenv~=1.0.1
 spotipy~=2.24.0
+mutagen
+lyricsgenius
