@@ -1,12 +1,10 @@
 import os
-from dotenv import load_dotenv
 import re
 
 from pytubefix import Playlist, YouTube
 
 from pytubeApi import PytubeApi
 
-load_dotenv()
 
 def print_menu():
     print("\nChoose an option:")

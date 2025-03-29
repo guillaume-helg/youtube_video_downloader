@@ -12,24 +12,12 @@ class PytubeApi:
         pass
     
     def download_playlist_music(self, playlist_url):
-        try:
-            playlist = Playlist(playlist_url)
-            for video in playlist.videos:
-                try:
-                    # Vérifiez si le fichier existe déjà
-                    if not utils.check_file_exists(f"DL_{playlist.title}", f"{video.title}.mp4"):
-                        print("Downloading : ", video.title)
+        pl = Playlist("https://www.youtube.com/playlist?list=PLZ2CHghVqArwoJMUA-Bwmv-alv3U9rlTa")
 
-                        # Essayez d'obtenir le flux audio avec itag 140
-                        stream = video.streams.get_by_itag(140)
-                        if stream is not None:
-                            stream.download(f"./DL_{playlist.title}")
-                        else:
-                            print(f"Aucun flux audio 140 disponible pour la vidéo {video.title}")
-                except PytubeError as e:
-                    print(f"Erreur lors du téléchargement de la vidéo {video.title} : {e}")
-        except Exception as e:
-            print(f"Erreur lors de la récupération de la playlist : {e}")
+        for video in pl.videos:
+            ys = video.streams.get_audio_only()
+            ys.download("./DL_music/")
+            print(f"Downloaded: {video.title}")
     
 
     # Allow to download music
