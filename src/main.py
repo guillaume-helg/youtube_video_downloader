@@ -1,69 +1,70 @@
 import os
 import re
-
-from pytubefix import Playlist, YouTube
-
 from pytubeApi import PytubeApi
 
-
 def print_menu():
-    print("\nChoose an option:")
-    print("1. Download from youtube")
-    print("2. Download from spotify")
-    print("3. See my history")
-    print("6. Exit")
+    print("\n--- YouTube Downloader Pro ---")
+    print("1. Download from YouTube (Video/Music/Playlist)")
+    print("2. See Download History")
+    print("3. Exit")
+    print("------------------------------")
 
 def main():
-
-
     ptb = PytubeApi()
 
     def download_from_youtube():
-        print("Paste your link (video, music, playlist) : ")
-        url = input()
+        print("\nPaste your link (video, music, or playlist):")
+        url = input("> ").strip()
+        if not url:
+            return
 
-        x = re.search(".*playlist.*", url)
+        is_playlist = "playlist" in url.lower()
 
-        if x:
-            print("(Playlist) Choose your format : \n1 - audio\n2 - video")
-            reponse = int(input())
-            ptb.download_playlist_music(Playlist(url)) if reponse == 1 else ptb.download_playlist_video(Playlist(url))
+        if is_playlist:
+            print("\n(Playlist) Choose format:")
+            print("1 - Audio (.m4a + lyrics)")
+            print("2 - Video (.mp4)")
+            choice = input("> ")
+            if choice == '1':
+                ptb.download_playlist_music(url)
+            else:
+                ptb.download_playlist_video(url)
         else:
-            print("(Video) Choose your format : \n1 - audio\n2 - video")
-            reponse = int(input())
-            ptb.download_music(YouTube(url)) if reponse == 1 else ptb.download_video(YouTube(url), use_oauth=True, allow_oauth_cache=True, use_po_token=True)
-
-    # def download_from_spotify():
-    #     print("Paste your link (spotify playlist) : ")
-    #     url = input()
-    #
-    #     tracks = stf.get_playlist_tracks(url)
-    #
-    #     ptb.download_spotify_tracks(tracks, ytb)
-
+            print("\n(Single Video) Choose format:")
+            print("1 - Audio (.m4a + lyrics)")
+            print("2 - Video (.mp4)")
+            choice = input("> ")
+            if choice == '1':
+                ptb.download_music(url)
+            else:
+                ptb.download_video(url)
 
     def see_my_history():
-        print("Not available yet")
-
+        history = ptb._get_history()
+        if not history:
+            print("\nYour history is empty.")
+        else:
+            print("\n--- Download History ---")
+            for i, item in enumerate(history, 1):
+                print(f"{i}. {item['title']} (ID: {item['id']})")
+            print("------------------------")
 
     actions = {
         '1': download_from_youtube,
-        #'2': download_from_spotify,
-        '3': see_my_history,
+        '2': see_my_history,
     }
 
     while True:
         print_menu()
-        choice = input("Enter your choice (1-6) : ")
+        choice = input("Enter your choice: ").strip()
 
-        if choice == '6':
-            print("Exiting the program !")
+        if choice == '3':
+            print("Exiting. Happy listening!")
             break
         elif choice in actions:
             actions[choice]()
         else:
-            print("Invalid choice ! Try again !")
-
+            print("Invalid choice! Please try again.")
 
 if __name__ == "__main__":
     main()
